@@ -25,6 +25,28 @@ os.makedirs(STATIC, exist_ok=True)
 app = FastAPI(title="First Rounds")
 
 
+@app.on_event("startup")
+def _demo_on_start():
+    """FR_DEMO_ON_START=1: load the invented demo story once, when the DB is empty (for a deployed demo)."""
+    if os.environ.get("FR_DEMO_ON_START") != "1":
+        return
+    c = db.connect()
+    try:
+        n = c.execute("SELECT COUNT(*) FROM notes").fetchone()[0]
+    finally:
+        c.close()
+    if n == 0:
+        import threading
+
+        def _run():
+            try:
+                demo_load()
+                print("demo loaded on start")
+            except Exception as e:  # never block startup on a model hiccup
+                print("demo load on start failed:", type(e).__name__)
+        threading.Thread(target=_run, daemon=True).start()
+
+
 # ---------------------------------------------------------------- errors
 @app.exception_handler(HTTPException)
 async def _http_exc(request: Request, exc: HTTPException):
