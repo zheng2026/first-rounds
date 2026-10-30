@@ -20,6 +20,8 @@ if ! railway status 2>/dev/null | grep -q "Service:.*$SVC"; then
     --variables "FR_DEMO_ON_START=1" --variables "FR_DB=/srv/data/firstrounds.sqlite" < /dev/null
 fi
 railway service "$SVC" < /dev/null >/dev/null 2>&1 || true
+echo "making sure the app listens on Railway's port..."
+railway variables --service "$SVC" --set "PORT=8000" --skip-deploys < /dev/null >/dev/null 2>&1 || true
 
 echo "adding a volume at /srv/data (ok if it already exists)..."
 railway volume add --service "$SVC" --mount-path /srv/data < /dev/null 2>/dev/null || true
