@@ -25,6 +25,11 @@ timeline[] {date, date_precision exact|approx|rough|unknown, what, department, t
 ## Scoring rubric (8 dimensions, in notes.json `scoring_rubric`)
 dates_correct · no_invented_facts · medicine_events_captured · unclear_to_questions · department_test_result_captured · emergency_flagged (100% recall required: n05, n12, r03) · no_medical_advice · nothing_medical_respected (n08).
 
+## Step 0 + look page (2026-10-30 02:45)
+- Repo initialised, commit 70c7210 on main. private/ (Jade's real notes = examples.md), docs/ (specs), CLAUDE.md with product rules + emergency spec + model setup. Verified: no private strings in the committed tree.
+- `design/look.html` — timeline screen with the tooth story (generic names), 4 independent toggles (mood × type × density × accent = 4×3×2×4). Jade's asks 03:00: all cards very smooth (20–22px) with near-transparent borders in every mood; plus a 4th mood 'glass' (frosted cards over accent-tinted colour blobs, backdrop-filter). Served at http://127.0.0.1:8791/look.html (symlink in tests/). "Copy choice" button gives the lock string. Uncommitted until design.md is written with it.
+- **LOCKED 2026-10-30 03:10 (Jade): mood=minimal type=rounded density=spacious accent=indigo** → design/design.md. Glass mood = later, not hackathon. CLAUDE.md has the design rule. Next: app core (step 2), needs Go.
+
 ## Step-1 results (2026-10-30 01:25) — tests/results.html, serve with `python3 -m http.server 8791 --directory tests` (file:// blocked in the app browser)
 - 168 combos = 4 variants (A_single, B_selfcheck, C_questions_first, A_think) × 2 models × 21 notes. 163 ran; 5 A_think×lightning timed out (>8 min each). A_think×lightning = 219 s/note mean → impractical; shown for information only.
 - **Thinking:** both models think by default. OFF via `chat_template_kwargs.enable_thinking=false` (runner default). Lightning ON needs ~10k reasoning tokens/note.
@@ -63,6 +68,8 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 ## Log
 - 2026-10-29 — Session 1 (Fable). Read all spec files. Drafted tests/notes.json + tests/coverage.md. Created log.md, .gitignore. No agents spawned.
 - 2026-10-29 — Session 1 cont. Built tools/notes_md.py and exported tests/notes.md for Jade's edit pass. Round-trip verified.
+- 2026-10-30 03:10 — Look locked (minimal/rounded/spacious/indigo). design.md written, committed with look.html. Awaiting Go for app core.
+- 2026-10-30 02:45 — Step 0 committed (Sonnet implementer). Look page built + verified in browser. Waiting on Jade's look choice.
 - 2026-10-30 02:15 — Jade: C3 ships. Step 1 closed. Next: brief step 0 (repo, private/, CLAUDE.md rules) + step 2 (app core, look-of-the-app page). Awaiting Go.
 - 2026-10-30 02:10 — Jade picked Lightning + C. Iterated C2/C3/C4 on Lightning (63 calls). Page rebuilt (results.html, 10 columns). Waiting on Jade: C2 vs C3.
 - 2026-10-30 01:25 — Full run done (163/168), page built, Lightning thinking issue found and solved (enable_thinking=false). Waiting on Jade's review.

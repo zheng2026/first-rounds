@@ -15,3 +15,4 @@ tests/results.html
 tests/runs_full.log
 __pycache__/
 *.pyc
+tests/look.html

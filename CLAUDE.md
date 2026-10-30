@@ -92,3 +92,6 @@ Emergency detection must catch 100% of positives. A few false alarms are accepta
 
 # Checkpoints
 Every STOP in docs/first-rounds-build-brief-emrgency-authority-and-checkpoints.md means: show Jade, wait for approval.
+
+# Design
+All UI follows `design/design.md`. Don't invent new colors, fonts, sizes or spacing. Locked 2026-10-30: mood=minimal, type=rounded (Nunito), density=spacious, accent=indigo. `design/look.html` is the variants page (glass mood kept there for later, not for the hackathon).
