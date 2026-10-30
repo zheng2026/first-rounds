@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fff; --surface:#fafafa; --line:rgba(0,0,0,.05); --rail:#cfcfcf; --ink:#111; --ink-2:#555; --ink-3:#888;
+          --accent:#3b5bdb; --accent-soft:#e3e8fb; --accent-ink:#22378f; --q:#8a6d00; --qbg:#fff8dc; --qline:#e3cf7a; --warn:#b4531f; --warnline:#e6c4b0; }
+  * { box-sizing:border-box; margin:0; }
+  html, body { width:1500px; height:1000px; background:var(--bg); font-family:'Nunito', system-ui, sans-serif; color:var(--ink); overflow:hidden; }
+  .wrap { display:grid; grid-template-columns: 1fr 560px; gap:60px; padding:110px 110px 110px 120px; height:100%; align-items:center; }
+  .brand { font-size:104px; font-weight:800; letter-spacing:-.02em; line-height:1; }
+  .brand small { display:block; font-size:34px; font-weight:400; color:var(--ink-3); margin-top:10px; letter-spacing:0; }
+  .tag { font-size:40px; font-weight:600; color:var(--accent-ink); margin-top:40px; line-height:1.25; }
+  .sub { font-size:28px; color:var(--ink-2); margin-top:28px; line-height:1.4; max-width:620px; }
+  .pills { display:flex; gap:12px; margin-top:44px; flex-wrap:wrap; }
+  .pill { font-size:22px; font-weight:600; padding:8px 18px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); }
+  .phone { background:var(--bg); border:1px solid var(--line); border-radius:40px; box-shadow:0 30px 80px rgba(34,55,143,.12); padding:36px 34px; }
+  .today { background:var(--accent-soft); border-radius:20px; padding:14px 20px; margin-bottom:22px; }
+  .today .h { font-size:19px; font-weight:700; color:var(--accent-ink); margin-bottom:4px; }
+  .today li { font-size:18px; color:var(--ink-2); margin-left:18px; }
+  h2 { font-size:30px; font-weight:700; margin:6px 0 14px; display:flex; justify-content:space-between; align-items:baseline; }
+  h2 span { font-size:17px; color:var(--ink-3); font-weight:400; }
+  .tl { position:relative; list-style:none; padding:0; }
+  .tl::before { content:""; position:absolute; left:9px; top:10px; bottom:14px; width:2px; background:var(--rail); }
+  .e { position:relative; padding-left:34px; margin-bottom:16px; }
+  .e::before { content:""; position:absolute; left:3px; top:16px; width:14px; height:14px; border-radius:50%; background:#fff; border:2.5px solid var(--accent); }
+  .e.rough::before { border-style:dashed; border-color:var(--ink-3); }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:14px 20px; }
+  .date { font-size:17px; color:var(--ink-2); font-weight:600; } .date i { font-style:normal; color:var(--ink-3); font-weight:400; margin-left:8px; }
+  .what { font-size:21px; margin:2px 0 8px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; }
+  .chip { font-size:16px; padding:3px 12px; border-radius:999px; border:1px solid rgba(0,0,0,.08); color:var(--ink-2); background:#fff; }
+  .chip.med { border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft); }
+  .chip.stop { border-style:dashed; }
+  .chip.q { border-color:var(--qline); background:var(--qbg); color:var(--q); }
+  .chip.worse { color:var(--warn); border-color:var(--warnline); }
+  .src { font-size:16px; color:var(--ink-3); margin-top:8px; } .src::before { content:"❝ "; color:var(--accent); }
+  .stop { box-shadow: inset 5px 0 0 var(--accent); }
+  .stop .h { font-size:17px; font-weight:700; color:var(--accent-ink); margin-top:8px; }
+  .stop .rule { font-size:20px; margin:2px 0 10px; }
+  .btn { display:inline-block; background:var(--accent); color:#fff; font-weight:700; font-size:17px; padding:8px 18px; border-radius:999px; }
+</style></head>
+<body><div class="wrap">
+  <div>
+    <div class="brand">First Rounds<small>Family does the first rounds.</small></div>
+    <div class="tag">Notes after a call with Mom become a timeline, reminders and a doctor card.</div>
+    <div class="sub">The AI goes to the family member who can use it, so the parent who can't still benefits. Records, organises, prepares questions. Never diagnoses.</div>
+    <div class="pills"><span class="pill">Nemotron 3.5 Lightning</span><span class="pill">Nebius Token Factory · EU</span><span class="pill">Open source</span></div>
+  </div>
+  <div class="phone">
+    <div class="today"><div class="h">Today · 3 to do</div><ul><li>Buy brand A toothpaste for Mom</li><li>Dentist next week: date confirmed?</li><li>Tell Mom: the dentist said finish all 7 days</li></ul></div>
+    <h2>Teeth <span>since about 10/19 · 4 notes</span></h2>
+    <ul class="tl">
+      <li class="e rough"><div class="card"><div class="date">2024<i>rough</i></div><div class="what">Crowns on three teeth.</div><div class="chips"><span class="chip q">which teeth?</span></div></div></li>
+      <li class="e"><div class="card"><div class="date">10/19<i>about</i></div><div class="what">Molars started hurting. Toothpaste X made it worse.</div><div class="chips"><span class="chip worse">worse: toothpaste X</span></div><div class="src">from note 10/29</div></div></li>
+      <li class="e"><div class="card stop"><div class="date">11/06</div><div class="what">Teeth feel better. She stopped antibiotic Y.</div><div class="chips"><span class="chip med stop">stopped · antibiotic Y</span></div><div class="h">Stop-check</div><div class="rule">The dentist said: finish all 7 days.</div><span class="btn">Tell Mom</span></div></li>
+    </ul>
+  </div>
+</div></body></html>
