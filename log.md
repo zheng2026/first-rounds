@@ -25,6 +25,16 @@ timeline[] {date, date_precision exact|approx|rough|unknown, what, department, t
 ## Scoring rubric (8 dimensions, in notes.json `scoring_rubric`)
 dates_correct · no_invented_facts · medicine_events_captured · unclear_to_questions · department_test_result_captured · emergency_flagged (100% recall required: n05, n12, r03) · no_medical_advice · nothing_medical_respected (n08).
 
+## Step 2 app core (started 2026-10-30 03:20)
+- Contract: `app/CONTRACT.md` — stack FastAPI + SQLite + static front end; data model; rules in CODE (stop-check, emergency template, history question → answer note, appointments); HTTP API; frontend screens. Read it before touching app/.
+- Schema change (additive, after the eval): OUTPUT_SCHEMA gained `problem` (grouping label) and per-entry `source` (verbatim quote for the source link). The eval ran without them; re-run `tools/run_eval.py --variants C3_dateguard --models lightning --force` if the numbers are ever quoted again.
+- Agents: 2 Sonnet implementers (medium) in parallel — backend owns app/*.py, requirements.txt, Dockerfile, app/demo_notes.json; frontend owns app/static/{index.html,app.css,app.js} with a `?mock=1` fixture mode. Fable verifies the join end-to-end.
+- Run: `.venv/bin/uvicorn app.main:app --port 8000` → http://127.0.0.1:8000 (venv: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`; system python has no fastapi). Demo data: GET /api/demo/load. Fresh DB: delete data/firstrounds.sqlite.
+- **Built + joined 2026-10-30 04:00.** Verified live: demo load (4 notes), chest note → emergency block citing NHS, antibiotic note → "Tell Mom: finish all 7 days" stop-check, nothing-medical note, Timeline/Today/Notes screens in the browser.
+- Code-side guards added after seeing live output (all in app/main.py / stopcheck.py): emergency source derived from the sign text (model mislabels chest as stroke); problem labels normalised to a canonical set so one story = one group; duration phrases ("for 7 days", 吃七天) count as a stopping rule when the model leaves it null; meta entries ("note written") dropped; model to-dos that are questions ("Ask Mom…") routed to questions; advice-worded to-dos dropped, and on emergency notes the warning owns the action; reminders ≤4 and questions ≤5 per note.
+- Known model-quality limits (prompt, not code): the model sometimes dates a stop event on the note date; odd event types ("continued"); a non-medical demo note yields a few silly questions. Jade's STOPs for step 3 cover wording.
+- index.html must reference /static/app.css and /static/app.js (the backend mounts /static).
+
 ## Step 0 + look page (2026-10-30 02:45)
 - Repo initialised, commit 70c7210 on main. private/ (Jade's real notes = examples.md), docs/ (specs), CLAUDE.md with product rules + emergency spec + model setup. Verified: no private strings in the committed tree.
 - `design/look.html` — timeline screen with the tooth story (generic names), 4 independent toggles (mood × type × density × accent = 4×3×2×4). Jade's asks 03:00: all cards very smooth (20–22px) with near-transparent borders in every mood; plus a 4th mood 'glass' (frosted cards over accent-tinted colour blobs, backdrop-filter). Served at http://127.0.0.1:8791/look.html (symlink in tests/). "Copy choice" button gives the lock string. Uncommitted until design.md is written with it.
@@ -68,6 +78,8 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 ## Log
 - 2026-10-29 — Session 1 (Fable). Read all spec files. Drafted tests/notes.json + tests/coverage.md. Created log.md, .gitignore. No agents spawned.
 - 2026-10-29 — Session 1 cont. Built tools/notes_md.py and exported tests/notes.md for Jade's edit pass. Round-trip verified.
+- 2026-10-30 04:00 — App core built (2 Sonnet implementers), joined, patched, verified live. Committed. Next: step 3 (doctor card, Chinese wording STOP, medical-advice STOP). Awaiting Go.
+- 2026-10-30 03:20 — Go app core. Contract written, schema +problem/+source, 2 Sonnet implementers spawned (backend / frontend).
 - 2026-10-30 03:10 — Look locked (minimal/rounded/spacious/indigo). design.md written, committed with look.html. Awaiting Go for app core.
 - 2026-10-30 02:45 — Step 0 committed (Sonnet implementer). Look page built + verified in browser. Waiting on Jade's look choice.
 - 2026-10-30 02:15 — Jade: C3 ships. Step 1 closed. Next: brief step 0 (repo, private/, CLAUDE.md rules) + step 2 (app core, look-of-the-app page). Awaiting Go.

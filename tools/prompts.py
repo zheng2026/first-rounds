@@ -9,6 +9,7 @@ The LAST step must output the final JSON. Variants differ on ONE named dimension
 """
 
 OUTPUT_SCHEMA = """{
+  "problem": "<one short label for the health issue this note is mainly about, lower case, e.g. teeth / blood pressure / stomach / sleep / dizziness / skin / knees; null if nothing medical>",
   "emergency": {"warning": true|false, "sign": "<which warning sign, quoting the note, or null>", "source": "<NHS | 中风120/BEFAST | null>"},
   "nothing_medical": true|false,
   "timeline": [
@@ -16,6 +17,7 @@ OUTPUT_SCHEMA = """{
       "date": "<YYYY-MM-DD, or free text like 'about 2020' / 'before 2026-02-17 (Spring Festival)', or null>",
       "date_precision": "exact|approx|rough|unknown",
       "what": "<what happened, in the note's own terms>",
+      "source": "<short verbatim quote (≤ 20 words) of the words in the note this entry comes from>",
       "department": "<as in the note, e.g. 口腔科 (dentistry), or null>",
       "test": "<named test/procedure exactly as the note names it; 'unspecified scan' if the note doesn't say; or null>",
       "test_where": "<hospital/place if stated, else null>",
