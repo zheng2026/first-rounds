@@ -1,0 +1,16 @@
+# Render alternative: one web service from the Dockerfile. Set NEBIUS_API_KEY in the dashboard (never in this file).
+services:
+  - type: web
+    name: first-rounds
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NEBIUS_BASE_URL
+        value: https://api.tokenfactory.nebius.com/v1
+      - key: FR_DEMO_ON_START
+        value: "1"
+      - key: FR_DB
+        value: /srv/data/firstrounds.sqlite
+      - key: NEBIUS_API_KEY
+        sync: false

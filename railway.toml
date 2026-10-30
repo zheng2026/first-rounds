@@ -1,0 +1,10 @@
+# Railway: build from the Dockerfile, keep the SQLite file on a volume mounted at /srv/data.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
