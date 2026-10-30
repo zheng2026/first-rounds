@@ -30,7 +30,11 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 - Docker image builds and runs: `docker build -t first-rounds .`; health answers at once; demo loads ~50 s later. Verified locally 14:10.
 - **No deploy host yet:** this Mac has docker only — no vercel/fly/railway/gh CLIs, no logins. A public URL needs Jade: a GitHub repo to push to (and ideally a host linked to it: Render / Railway / HF Spaces Docker / Nebius). Submission needs the public repo at minimum; deploy is optional per the hackathon text.
 - Privacy scan (14:05): full git history has 0 hits for real brand names, 0 key-like strings, 0 absolute home paths; the only personal strings are the commit author name/email (Jade's normal git identity). docs/ holds Jade's own idea description (her mother's story in her words) and the build brief ("I'm in Spain") — her call whether those stay public.
-- Remaining: Jade's privacy STOP → `git tag hackathon-submission` → push → Devpost (repo link, video/screenshots).
+- **Public repo:** https://github.com/zheng2026/first-rounds (created by Jade via gh at ~14:20; pushes from this session work).
+- **Live:** https://first-rounds-production.up.railway.app (Railway project first-rounds, service first-rounds, volume at /srv/data, vars NEBIUS_API_KEY/NEBIUS_BASE_URL/FR_DEMO_ON_START/FR_DB/PORT=8000). Deploys are Jade's click: `railway redeploy --service first-rounds -y` or `zsh tools/deploy_railway.sh`. The permission layer blocks public-surface creation and deploys for Claude; config changes (variables) are allowed.
+- Railway gotcha (cost ~25 min): an empty project needs `railway add --service` first; and the proxy 502s until the service has PORT set and is redeployed (Dockerfile CMD now honours $PORT).
+- Tag `hackathon-submission` = the submitted version (pushed). Post-submission work goes on a branch until judging ends 2026-12-15.
+- Devpost: Jade fills the form (repo link, live link, video or screenshots).
 
 ## Step 3 doctor card (started 2026-10-30 04:10)
 - Contract: app/CONTRACT.md "Step 3 addendum". Card data built in CODE from the DB (history / tests / current medicines / medicine events / helps·worsens / ask). The model only renders Chinese (one Lightning call, `prompts.CARD_ZH_SYSTEM`, same-shape JSON validated, cached by source hash). Stop-rule question inserted by code in the chosen wording — `prompts.STOP_RULE_WORDINGS` A–D — so wording changes need no model call.
@@ -94,6 +98,7 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 ## Log
 - 2026-10-29 — Session 1 (Fable). Read all spec files. Drafted tests/notes.json + tests/coverage.md. Created log.md, .gitignore. No agents spawned.
 - 2026-10-29 — Session 1 cont. Built tools/notes_md.py and exported tests/notes.md for Jade's edit pass. Round-trip verified.
+- 2026-10-30 14:45 — Repo public, Railway live, tag hackathon-submission pushed. Submission material ready for Devpost.
 - 2026-10-30 14:15 — Step 4: README/LICENSE written, Docker verified, privacy scan done, committed. Waiting on Jade: privacy approval + GitHub repo/host.
 - 2026-10-30 05:20 — Jade locked wording A. Toggles hidden, design.md updated, committed. Step 3 closed. Next: step 4 (deploy, README, video) — awaiting Go.
 - 2026-10-30 05:15 — Doctor card built (2 Sonnet implementers), joined, 7 code fixes from live output, verified in browser, committed. Waiting on Jade's two STOPs.

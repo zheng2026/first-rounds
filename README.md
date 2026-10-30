@@ -118,6 +118,10 @@ Optional environment variables:
 - `FR_DB`: path to the SQLite file (default `data/firstrounds.sqlite`).
 - `FR_DEMO_ON_START=1`: load the demo story on first start when the database is empty.
 
+## Live demo
+
+<https://first-rounds-production.up.railway.app> — invented demo data (the tooth story), loaded on first start. Runs on Railway from the Dockerfile; the key lives only in the service environment.
+
 ## Deploy
 
 ```
