@@ -433,13 +433,17 @@ async function viewCard() {
     clearTimeout(timer); timer = setTimeout(() => { copy.textContent = "Copy text"; }, 2000);
   });
 
+  // Locked 2026-10-30 (Jade): layout=grouped, density=spacious, wording=A. Those toggles were the step-3 review
+  // and are gone; text size and language stay as real settings. Add "&review=1" to the URL to bring them back.
+  const REVIEW = new URLSearchParams(location.search).get("review") === "1";
   const TOG = [
-    ["layout", "Layout", [["grouped", "Grouped"], ["long", "Long"]]],
-    ["density", "Density", [["spacious", "Spacious"], ["dense", "Dense"]]],
+    ...(REVIEW ? [["layout", "Layout", [["grouped", "Grouped"], ["long", "Long"]]],
+                  ["density", "Density", [["spacious", "Spacious"], ["dense", "Dense"]]]] : []),
     ["text", "Text", [["normal", "Normal"], ["large", "Large"]]],
     ["lang", "Language", [["zh", "中文"], ["en", "English"]]],
-    ["wording", "Wording", [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]]
+    ...(REVIEW ? [["wording", "Wording", [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]]] : [])
   ];
+  if (!REVIEW) { prefs.layout = "grouped"; prefs.density = "spacious"; prefs.wording = "A"; }
   const toggles = h("div", { class: "toggles" });
   TOG.forEach(([key, label, opts]) => {
     const seg = h("div", { class: "seg", role: "group", "aria-label": label });

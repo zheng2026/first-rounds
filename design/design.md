@@ -59,3 +59,8 @@ No shadows (`--card-shadow: none`). Depth comes from surface vs bg, not from sha
 - Transitions ≤ 250ms on color/radius only; none under `prefers-reduced-motion`.
 - Focus ring: 3px accent, 2px offset. Tap targets ≥ 44px.
 - Contrast: all text pairs above are ≥ 4.5:1 on their backgrounds.
+
+## Doctor card (locked 2026-10-30 05:20, Jade)
+- Layout grouped (病史 / 已做的检查 / 现在在吃的药 / 有帮助·会加重 / 想问医生的问题), density spacious, Chinese by default with English toggle, text size toggle (normal / large for older eyes) kept as a user setting.
+- Stopping-rule question, wording A: 症状好转后，这个药还要继续吃吗？吃多久？ — one per medicine still being taken; a stopped medicine with a recorded rule gets the stop-check question instead.
+- Review toggles (layout, density, wording) are hidden; `?review=1` shows them.

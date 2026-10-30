@@ -31,7 +31,7 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 - Agents: 2 Sonnet implementers (medium): backend app/card.py + routes; frontend card tab in app/static.
 - **Built + joined 2026-10-30 05:15.** Live: GET /api/card?problem=teeth renders a fully Chinese card (title, dates, event words formatted in CODE; free text by Lightning; validated + retried if <85% of fields are Chinese); /api/card/text gives the WeChat-paste version; the tab's toggles work on live data.
 - Code guards added from live output (app/card.py): stop-rule question only for medicines still being taken (and never for toothpaste etc.); a stopped medicine with a recorded rule becomes a 'stopcheck' question translated by the model; stopped medicines never listed as current; med_events deduped; 'about about' fixed; validator tolerates dropped fields (filled from en). Demo notes now say "brand A toothpaste".
-- STOPs for Jade NOW: (1) Chinese wording — read the card as Mom would; pick wording A–D; (2) medical-advice check — every "想问医生的问题" item and every Today to-do.
+- **LOCKED 2026-10-30 05:20 (Jade): wording A.** Layout grouped, density spacious locked; review toggles hidden (`?review=1` restores). design.md has a Doctor card section. The advice check on model questions: Jade did not ask for a prompt change — leave C3's ask_the_doctor rule as is unless she says so.
 - Known model-quality leftovers: the model's own ask_doctor questions sometimes duplicate each other or sound advice-adjacent ("妈妈是否应该停止使用牙膏X以及原因"); one history item is a place, not an event. These are prompt-level; Jade's STOP decides whether to tighten C3's ask_the_doctor rule.
 
 ## Step 2 app core (started 2026-10-30 03:20)
@@ -87,6 +87,7 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 ## Log
 - 2026-10-29 — Session 1 (Fable). Read all spec files. Drafted tests/notes.json + tests/coverage.md. Created log.md, .gitignore. No agents spawned.
 - 2026-10-29 — Session 1 cont. Built tools/notes_md.py and exported tests/notes.md for Jade's edit pass. Round-trip verified.
+- 2026-10-30 05:20 — Jade locked wording A. Toggles hidden, design.md updated, committed. Step 3 closed. Next: step 4 (deploy, README, video) — awaiting Go.
 - 2026-10-30 05:15 — Doctor card built (2 Sonnet implementers), joined, 7 code fixes from live output, verified in browser, committed. Waiting on Jade's two STOPs.
 - 2026-10-30 04:15 — Go doctor card. Card prompt + contract written, 2 Sonnet implementers spawned.
 - 2026-10-30 04:00 — App core built (2 Sonnet implementers), joined, patched, verified live. Committed. Next: step 3 (doctor card, Chinese wording STOP, medical-advice STOP). Awaiting Go.

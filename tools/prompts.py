@@ -198,6 +198,7 @@ MODELS = {
 }
 
 # ---------------------------------------------------------------- Doctor card: Chinese rendering
+STOP_RULE_WORDING_LOCKED = "A"  # Jade, 2026-10-30 05:20
 STOP_RULE_WORDINGS = {
     "A": "症状好转后，这个药还要继续吃吗？吃多久？",
     "B": "如果她感觉好了，这个药是不是就可以停了？还是要吃够几天？",
