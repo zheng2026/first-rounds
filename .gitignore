@@ -1,0 +1,17 @@
+# private test set: real brand/drug names (a sanitized copy goes public)
+tests/notes.json
+tests/notes.md
+tests/coverage.md
+# secrets
+.env
+# runner caches (added later)
+tests/runs/
+.DS_Store
+# added step 0
+private/
+tests/review_codex.md
+tests/results.json
+tests/results.html
+tests/runs_full.log
+__pycache__/
+*.pyc
