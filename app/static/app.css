@@ -114,3 +114,40 @@ input[type=date] { min-height:44px; }
   .card, .chip, .btn, .act, .tabs a, .today { transition:background-color .2s, color .2s, border-color .2s, border-radius .2s; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+
+/* Doctor card */
+.pick { margin:0 0 var(--sp-sm); }
+select { font-family:inherit; font-size:var(--fs); color:var(--ink); background:var(--bg); border:1px solid var(--line-strong); border-radius:var(--radius-input); padding:var(--sp-xs) var(--sp-sm); min-height:44px; flex:1; min-width:0; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+.toggles { display:flex; flex-direction:column; gap:var(--sp-xs); margin-bottom:var(--sp-sm); }
+.tog { display:flex; align-items:center; gap:var(--sp-sm); }
+.tl-lbl { width:72px; flex:none; font-size:var(--fs-sm); color:var(--ink-3); }
+.seg { display:inline-flex; border:1px solid var(--line-strong); border-radius:999px; overflow:hidden; }
+.seg button { font-family:inherit; font-size:var(--fs-sm); color:var(--ink-2); background:var(--bg); border:0; padding:6px 14px; min-height:44px; min-width:44px; cursor:pointer; }
+.seg button[aria-pressed="true"] { background:var(--accent-soft); color:var(--accent-ink); font-weight:600; }
+.ctools { margin:0 0 var(--sp-sm); }
+.ctools[hidden] { display:none; }
+.cardout { margin-top:var(--sp-sm); }
+.dcard { --b:var(--fs); --s:var(--fs-sm); --h:var(--fs-sm); --t:var(--fs-lg); background:var(--surface); font-size:var(--b); }
+.dcard.dense { --sp:10px; --sp-xs:4px; --sp-sm:6px; --sp-lg:14px; --gap:8px; }
+.dcard.large { --b:19px; --s:16px; --h:24px; --t:24px; }
+.dtitle { font-size:var(--t); font-weight:700; margin:var(--sp-xs) 0 var(--sp-sm); line-height:1.3; }
+.dsec { font-size:var(--h); font-weight:600; color:var(--accent-ink); margin:var(--sp) 0 var(--sp-xs); }
+.dlist, .dask { margin:0; padding:0; }
+.dlist { list-style:none; }
+.dask { padding-left:1.4em; }
+.dlist li, .dask li { margin-bottom:var(--sp-xs); overflow-wrap:anywhere; }
+.dask li { padding-left:4px; }
+.dd { display:block; font-size:var(--s); color:var(--ink-2); }
+.kind { display:inline-block; font-size:var(--s); color:var(--ink-3); border:1px solid var(--line-strong); border-radius:999px; padding:0 8px; margin-right:8px; }
+.dcard.large .dd, .dcard.large .kind { font-size:16px; }
+
+@media print {
+  .topbar, .tabs, .toggles, .pick, .ctools, .fab, .errblock, .muted { display:none !important; }
+  html, body { background:#fff !important; }
+  .app { width:100%; padding:0; min-height:0; }
+  main { padding:0; }
+  main > h1.title { display:none; }
+  .dcard { background:#fff !important; border:0; border-radius:0; padding:0; color:#000; }
+  .dcard .dd, .dcard .kind { color:#333; }
+}

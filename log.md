@@ -25,6 +25,15 @@ timeline[] {date, date_precision exact|approx|rough|unknown, what, department, t
 ## Scoring rubric (8 dimensions, in notes.json `scoring_rubric`)
 dates_correct · no_invented_facts · medicine_events_captured · unclear_to_questions · department_test_result_captured · emergency_flagged (100% recall required: n05, n12, r03) · no_medical_advice · nothing_medical_respected (n08).
 
+## Step 3 doctor card (started 2026-10-30 04:10)
+- Contract: app/CONTRACT.md "Step 3 addendum". Card data built in CODE from the DB (history / tests / current medicines / medicine events / helps·worsens / ask). The model only renders Chinese (one Lightning call, `prompts.CARD_ZH_SYSTEM`, same-shape JSON validated, cached by source hash). Stop-rule question inserted by code in the chosen wording — `prompts.STOP_RULE_WORDINGS` A–D — so wording changes need no model call.
+- The step-3 variants review = the Doctor card tab itself with toggles (grouped|long, spacious|dense, normal|large, 中文|English, wording A–D) on the demo data. Jade picks; then defaults get locked and toggles hidden.
+- Agents: 2 Sonnet implementers (medium): backend app/card.py + routes; frontend card tab in app/static.
+- **Built + joined 2026-10-30 05:15.** Live: GET /api/card?problem=teeth renders a fully Chinese card (title, dates, event words formatted in CODE; free text by Lightning; validated + retried if <85% of fields are Chinese); /api/card/text gives the WeChat-paste version; the tab's toggles work on live data.
+- Code guards added from live output (app/card.py): stop-rule question only for medicines still being taken (and never for toothpaste etc.); a stopped medicine with a recorded rule becomes a 'stopcheck' question translated by the model; stopped medicines never listed as current; med_events deduped; 'about about' fixed; validator tolerates dropped fields (filled from en). Demo notes now say "brand A toothpaste".
+- STOPs for Jade NOW: (1) Chinese wording — read the card as Mom would; pick wording A–D; (2) medical-advice check — every "想问医生的问题" item and every Today to-do.
+- Known model-quality leftovers: the model's own ask_doctor questions sometimes duplicate each other or sound advice-adjacent ("妈妈是否应该停止使用牙膏X以及原因"); one history item is a place, not an event. These are prompt-level; Jade's STOP decides whether to tighten C3's ask_the_doctor rule.
+
 ## Step 2 app core (started 2026-10-30 03:20)
 - Contract: `app/CONTRACT.md` — stack FastAPI + SQLite + static front end; data model; rules in CODE (stop-check, emergency template, history question → answer note, appointments); HTTP API; frontend screens. Read it before touching app/.
 - Schema change (additive, after the eval): OUTPUT_SCHEMA gained `problem` (grouping label) and per-entry `source` (verbatim quote for the source link). The eval ran without them; re-run `tools/run_eval.py --variants C3_dateguard --models lightning --force` if the numbers are ever quoted again.
@@ -78,6 +87,8 @@ dates_correct · no_invented_facts · medicine_events_captured · unclear_to_que
 ## Log
 - 2026-10-29 — Session 1 (Fable). Read all spec files. Drafted tests/notes.json + tests/coverage.md. Created log.md, .gitignore. No agents spawned.
 - 2026-10-29 — Session 1 cont. Built tools/notes_md.py and exported tests/notes.md for Jade's edit pass. Round-trip verified.
+- 2026-10-30 05:15 — Doctor card built (2 Sonnet implementers), joined, 7 code fixes from live output, verified in browser, committed. Waiting on Jade's two STOPs.
+- 2026-10-30 04:15 — Go doctor card. Card prompt + contract written, 2 Sonnet implementers spawned.
 - 2026-10-30 04:00 — App core built (2 Sonnet implementers), joined, patched, verified live. Committed. Next: step 3 (doctor card, Chinese wording STOP, medical-advice STOP). Awaiting Go.
 - 2026-10-30 03:20 — Go app core. Contract written, schema +problem/+source, 2 Sonnet implementers spawned (backend / frontend).
 - 2026-10-30 03:10 — Look locked (minimal/rounded/spacious/indigo). design.md written, committed with look.html. Awaiting Go for app core.

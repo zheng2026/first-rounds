@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS current_medicines(
   id INTEGER PRIMARY KEY AUTOINCREMENT, note_id INTEGER, text TEXT);
 CREATE TABLE IF NOT EXISTS ask_doctor(
   id INTEGER PRIMARY KEY AUTOINCREMENT, note_id INTEGER, problem TEXT, text TEXT);
+CREATE TABLE IF NOT EXISTS cards(
+  id INTEGER PRIMARY KEY AUTOINCREMENT, problem TEXT, source_hash TEXT, en_json TEXT, zh_json TEXT,
+  zh_error TEXT, created_at TEXT);
+CREATE INDEX IF NOT EXISTS ix_cards_hash ON cards(source_hash);
 CREATE INDEX IF NOT EXISTS ix_entries_note ON entries(note_id);
 CREATE INDEX IF NOT EXISTS ix_todos_note ON todos(note_id);
 CREATE INDEX IF NOT EXISTS ix_questions_note ON questions(note_id);

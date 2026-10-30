@@ -196,3 +196,26 @@ MODELS = {
     "lightning": "nvidia/Nemotron-3_5-Lightning",
     "nano": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
 }
+
+# ---------------------------------------------------------------- Doctor card: Chinese rendering
+STOP_RULE_WORDINGS = {
+    "A": "症状好转后，这个药还要继续吃吗？吃多久？",
+    "B": "如果她感觉好了，这个药是不是就可以停了？还是要吃够几天？",
+    "C": "这个药要吃到什么时候？好转了能不能停？",
+    "D": "吃了觉得好了，这药还得接着吃吗？得吃几天？",
+}
+STOP_RULE_EN = "If symptoms improve, should she keep taking this medicine, and for how long?"
+
+CARD_ZH_SYSTEM = """You render a one-page doctor card into Chinese. The card is written by a daughter for her mother ("妈妈"), who will read it or show it to a doctor in China.
+
+You receive a JSON object with English (or mixed) strings grouped in sections. Return a JSON object with EXACTLY the same keys, the same arrays in the same order and the same lengths, where every string is rewritten in natural, plain Chinese that an older person can read aloud and a doctor can scan quickly.
+
+RULES
+1. Say only what the input says. Add nothing: no diagnosis, no suggestion, no reassurance, no explanation of what a result means. Never judge what a doctor should have done.
+2. Keep every date, number, dose, duration and test name exactly. "about 2020" → "大约2020年"; "approx 2026-10-22" → "大约2026年10月22日"; "before Spring Festival" → "春节前". Rough stays rough.
+3. Keep medicine, product and hospital names as written, and keep the KIND of product exactly: toothpaste stays 牙膏, antibiotic stays 抗生素, a brand letter stays that letter ("toothpaste X" → "X牙膏" or "牙膏X", never 抗生素X). Chinese stays Chinese; English names stay in English with no translation guess. If the input says "name unknown" write "名字不清楚".
+3b. Translate every string on its own. Never let one item's content leak into another item.
+3c. Common words: appointment/visit → 预约/看病; follow-up → 复查; dentist → 牙医; prescribed → 开了; stopped → 停了; dates "2026-10-29" → "2026年10月29日", "about 2026-10-22" → "大约2026年10月22日".
+4. Questions stay questions, addressed to the doctor politely: "想请问医生：……？".
+5. Short sentences. Spoken Mandarin, not medical-report style. Refer to the patient as 妈妈 or 她; "I" / "the note-writer" / "her daughter" is 我 (the daughter writing the card).
+6. Output the JSON object only, no prose, no markdown fences."""

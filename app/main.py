@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from . import ROOT, db, extract as ex, notify, stopcheck
+from . import ROOT, card, db, extract as ex, notify, stopcheck
 
 STATIC = os.path.join(ROOT, "app", "static")
 DEMO = os.path.join(ROOT, "app", "demo_notes.json")
@@ -527,6 +527,9 @@ def demo_load():
 
 
 # ---------------------------------------------------------------- frontend
+app.include_router(card.router)
+
+
 @app.get("/", include_in_schema=False)
 def index():
     p = os.path.join(STATIC, "index.html")

@@ -22,7 +22,60 @@ const MOCK = (function () {
     { id: 4, note_date: T(-9), text: "teeth feel better, she stopped Y", kind: "call", created_at: T(-9), problem: "teeth", entry_count: 1, emergency: false },
     { id: 1, note_date: T(-19), text: "her molars have been hurting for a week. She tried toothpaste X but it only made it worse. She asked me to buy brand A instead. She is trying to book an appointment for next week", kind: "call", created_at: T(-19), problem: "teeth", entry_count: 3, emergency: false }
   ];
+
+  const CARD_EN = {
+    title: "Doctor card · teeth · " + iso(0),
+    history: [
+      { date_text: "about 2024", text: "Had crowns put on three teeth (doesn't know which)." },
+      { date_text: "about " + T(-20), text: "Molars started hurting." },
+      { date_text: T(-19), text: "Trying to book a dentist for next week." }
+    ],
+    tests: [{ date_text: T(-12), test: "Dentist exam", where: "dentist", result: "not done: no X-ray yet" }],
+    medicines: [{ name: "antibiotic Y", detail: "3 times a day; finish all 7 days" }],
+    med_events: [
+      { date_text: T(-12), name: "antibiotic Y", event: "started", rule: "finish all 7 days", reason: "" },
+      { date_text: T(-9), name: "antibiotic Y", event: "stopped", rule: "", reason: "teeth feel better" }
+    ],
+    helps: ["Brand A toothpaste"], worsens: ["Toothpaste X"],
+    ask: [
+      { text: "Which teeth had the crowns, and do they need an X-ray?", kind: "note" },
+      { text: "The doctor said to finish all 7 days of the antibiotic. (antibiotic Y)", kind: "stop_rule" },
+      { text: "She stopped antibiotic Y on " + T(-9) + " because teeth feel better. Was it OK to stop? Should she restart?", kind: "stopcheck" }
+    ]
+  };
+  const CARD_ZH = {
+    title: "妈妈的就诊卡 · 牙齿 · " + iso(0),
+    history: [
+      { date_text: "大约2024年", text: "做过三颗牙冠（不知道是哪几颗）。" },
+      { date_text: "大约 " + T(-20), text: "磨牙开始疼。" },
+      { date_text: T(-19), text: "想约下周看牙医。" }
+    ],
+    tests: [{ date_text: T(-12), test: "牙科检查", where: "牙医", result: "没做：还没拍X光" }],
+    medicines: [{ name: "抗生素Y", detail: "每天3次；吃满7天" }],
+    med_events: [
+      { date_text: T(-12), name: "抗生素Y", event: "开始吃", rule: "吃满7天", reason: "" },
+      { date_text: T(-9), name: "抗生素Y", event: "停药", rule: "", reason: "牙感觉好多了" }
+    ],
+    helps: ["A牌牙膏"], worsens: ["X牙膏"],
+    ask: [
+      { text: "牙冠是哪几颗？需要拍X光吗？", kind: "note" },
+      { text: "医生说抗生素要吃满7天。（抗生素Y）", kind: "stop_rule" },
+      { text: "她在" + T(-9) + "因为牙感觉好了停了抗生素Y。这样停可以吗？要不要重新吃？", kind: "stopcheck" }
+    ]
+  };
+  const cardText = function (c, lang) {
+    const zh = lang === "zh";
+    const H = zh ? ["病史", "已做的检查", "现在在吃的药", "想问医生的问题"] : ["History", "Tests already done", "Current medicines", "Ask the doctor"];
+    const L = [c.title, ""];
+    L.push(H[0]); c.history.forEach((x) => L.push("- " + x.date_text + " " + x.text));
+    L.push("", H[1]); c.tests.forEach((x) => L.push("- " + x.date_text + " " + x.test + ": " + x.result));
+    L.push("", H[2]); c.medicines.forEach((x) => L.push("- " + x.name + (x.detail ? " (" + x.detail + ")" : "")));
+    L.push("", H[3]); c.ask.forEach((x, i) => L.push((i + 1) + ". " + x.text));
+    return L.join("\n");
+  };
   return {
+    card: { en: CARD_EN, zh: CARD_ZH },
+    cardText: cardText,
     timeline: { problems: [{ problem: "teeth", since: "2024", note_count: 5, entries: entries }] },
     today: {
       emergencies: [],
@@ -54,6 +107,8 @@ const IS_MOCK = new URLSearchParams(location.search).get("mock") === "1";
 async function mockApi(method, path, body) {
   await new Promise((r) => setTimeout(r, 120));
   let m;
+  if (path.startsWith("/api/card/text")) { const q = new URLSearchParams(path.split("?")[1] || ""); return MOCK.cardText(MOCK.card[q.get("lang") === "en" ? "en" : "zh"], q.get("lang")); }
+  if (path.startsWith("/api/card")) { const q = new URLSearchParams(path.split("?")[1] || ""); return { problem: q.get("problem") || "teeth", generated_at: new Date().toISOString(), source_hash: "mock", en: MOCK.card.en, zh: MOCK.card.zh, zh_error: null }; }
   if (path === "/api/timeline") return MOCK.timeline;
   if (path === "/api/today") return MOCK.today;
   if (path === "/api/notes" && method === "GET") return MOCK.notes;
@@ -111,6 +166,12 @@ function h(tag, attrs, ...kids) {
 const $main = () => document.getElementById("main");
 function show(...nodes) { const m = $main(); m.replaceChildren(...nodes.flat().filter(Boolean)); }
 function errBlock() { return h("div", { class: "errblock bad", role: "alert" }, "Couldn't reach the app. Check it's running."); }
+async function apiText(path) {
+  if (IS_MOCK) return mockApi("GET", path);
+  const res = await fetch(path);
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.text();
+}
 function todayISO() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 function fmtDate(s) {
   if (!s) return "date unknown";
@@ -261,8 +322,144 @@ async function viewToday() {
   } catch (e) { show(errBlock()); }
 }
 
-function viewCard() {
-  show(h("h1", { class: "title" }, "Doctor card"), h("div", { class: "item" }, "Doctor card comes in the next step."));
+/* ----- Doctor card ----- */
+const CARD_DEFAULTS = { layout: "grouped", density: "spacious", text: "normal", lang: "zh", wording: "A" };
+function loadPrefs() {
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("fr_card_prefs") || "{}") || {}; } catch (e) { p = {}; }
+  const ok = { layout: ["grouped", "long"], density: ["spacious", "dense"], text: ["normal", "large"], lang: ["zh", "en"], wording: ["A", "B", "C", "D"] };
+  const out = {};
+  for (const k in CARD_DEFAULTS) out[k] = ok[k].includes(p[k]) ? p[k] : CARD_DEFAULTS[k];
+  return out;
+}
+function savePrefs(p) { try { localStorage.setItem("fr_card_prefs", JSON.stringify(p)); } catch (e) { /* private mode */ } }
+
+const CARD_LABELS = {
+  zh: { history: "病史", tests: "已做的检查", meds: "现在在吃的药", hw: "有帮助·会加重", ask: "想问医生的问题", helps: "有帮助", worsens: "会加重", test: "检查", medicine: "用药", event: "情况" },
+  en: { history: "History", tests: "Tests already done", meds: "Current medicines", hw: "Helps · worsens", ask: "Ask the doctor", helps: "Helps", worsens: "Worsens", test: "test", medicine: "medicine", event: "event" }
+};
+
+function dateSortKey(t) {
+  const m = /(\d{4}-\d{2}-\d{2})/.exec(t || "");
+  return m ? m[1] : "";
+}
+function longItems(c, L) {
+  const items = [];
+  (c.history || []).forEach((x) => items.push({ d: x.date_text, kind: "event", text: x.text }));
+  (c.tests || []).forEach((x) => items.push({ d: x.date_text, kind: "test", text: [x.test, x.where ? "(" + x.where + ")" : "", x.result ? "— " + x.result : ""].filter(Boolean).join(" ") }));
+  (c.med_events || []).forEach((x) => items.push({ d: x.date_text, kind: "medicine", text: [x.name, x.event, x.rule ? "— " + x.rule : "", x.reason ? "(" + x.reason + ")" : ""].filter(Boolean).join(" ") }));
+  items.forEach((it, i) => { it.i = i; it.k = dateSortKey(it.d); });
+  items.sort((a, b) => (a.k < b.k ? -1 : a.k > b.k ? 1 : a.i - b.i));
+  return items;
+}
+
+function cardNode(c, prefs) {
+  const L = CARD_LABELS[prefs.lang];
+  const root = h("article", { class: "card dcard" + (prefs.density === "dense" ? " dense" : "") + (prefs.text === "large" ? " large" : ""), lang: prefs.lang === "zh" ? "zh" : "en" });
+  root.append(h("h2", { class: "dtitle" }, c.title));
+  const sec = (title, body) => { root.append(h("h3", { class: "dsec" }, title), body); };
+  const dated = (d, t) => h("li", null, d ? h("span", { class: "dd" }, d) : null, t);
+  const history = c.history || [], tests = c.tests || [], meds = c.medicines || [], mev = c.med_events || [];
+  const helps = c.helps || [], worsens = c.worsens || [], ask = c.ask || [];
+  if (!history.length && !tests.length && !meds.length && !mev.length && !helps.length && !worsens.length && !ask.length) {
+    root.append(h("div", { class: "empty" }, "No notes for this problem yet."));
+    return root;
+  }
+  if (prefs.layout === "long") {
+    const items = longItems(c, L);
+    if (items.length) root.append(h("ul", { class: "dlist" }, items.map((it) =>
+      h("li", null, h("span", { class: "dd" }, it.d), h("span", { class: "kind" }, L[it.kind]), it.text))));
+  } else {
+    if (history.length) sec(L.history, h("ul", { class: "dlist" }, history.map((x) => dated(x.date_text, x.text))));
+    if (tests.length) sec(L.tests, h("ul", { class: "dlist" }, tests.map((x) =>
+      dated(x.date_text, [x.test, x.where ? " (" + x.where + ")" : "", x.result ? " — " + x.result : ""].join("")))));
+  }
+  if (meds.length) sec(L.meds, h("ul", { class: "dlist" }, meds.map((x) => h("li", null, h("b", null, x.name), x.detail ? " — " + x.detail : ""))));
+  if (helps.length || worsens.length) {
+    const ul = h("ul", { class: "dlist" });
+    helps.forEach((x) => ul.append(h("li", null, h("span", { class: "dd" }, L.helps), x)));
+    worsens.forEach((x) => ul.append(h("li", null, h("span", { class: "dd" }, L.worsens), x)));
+    sec(L.hw, ul);
+  }
+  if (ask.length) sec(L.ask, h("ol", { class: "dask" }, ask.map((x) => h("li", null, x.text))));
+  return root;
+}
+
+async function viewCard() {
+  const prefs = loadPrefs();
+  show(h("div", { class: "muted" }, "Loading…"));
+  let problems;
+  try { problems = ((await api("GET", "/api/timeline")).problems || []).map((p) => p.problem).filter(Boolean); }
+  catch (e) { show(errBlock()); return; }
+  const sel = h("select", { id: "card-problem", "aria-label": "Problem" });
+  problems.forEach((p) => sel.append(h("option", { value: p }, p.charAt(0).toUpperCase() + p.slice(1))));
+  sel.append(h("option", { value: "all" }, "All"));
+  const make = h("button", { class: "btn", type: "button" }, "Make card");
+  const out = h("div", { class: "cardout", role: "status" });
+  const tools = h("div", { class: "row ctools" });
+  const copy = h("button", { class: "btn ghost", type: "button" }, "Copy text");
+  const print = h("button", { class: "btn ghost", type: "button", onclick: () => window.print() }, "Print");
+  tools.append(copy, print); tools.hidden = true;
+  let data = null, gen = 0;
+
+  const render = () => {
+    if (!data) return;
+    const useZh = prefs.lang === "zh" && data.zh;
+    const notice = prefs.lang === "zh" && !data.zh ? h("div", { class: "errblock bad", role: "alert" }, "Chinese version failed; showing English. Try again.") : null;
+    const nodes = [cardNode(useZh ? data.zh : data.en, { layout: prefs.layout, density: prefs.density, text: prefs.text, lang: useZh ? "zh" : "en" })];
+    if (notice) nodes.unshift(notice);
+    out.replaceChildren(...nodes);
+  };
+  const fetchCard = async () => {
+    const my = ++gen;
+    make.disabled = true; tools.hidden = true;
+    out.replaceChildren(h("div", { class: "muted" }, "Writing the card in Chinese…"));
+    try {
+      const d = await api("GET", "/api/card?problem=" + encodeURIComponent(sel.value) + "&wording=" + prefs.wording);
+      if (my !== gen) return;
+      data = d; render(); tools.hidden = false;
+    } catch (e) { if (my === gen) { data = null; out.replaceChildren(errBlock()); } }
+    if (my === gen) make.disabled = false;
+  };
+  make.addEventListener("click", fetchCard);
+
+  let timer = null;
+  copy.addEventListener("click", async () => {
+    try {
+      const t = await apiText("/api/card/text?problem=" + encodeURIComponent(sel.value) + "&wording=" + prefs.wording + "&lang=" + prefs.lang);
+      await navigator.clipboard.writeText(t);
+      copy.textContent = "Copied";
+    } catch (e) { copy.textContent = "Couldn't copy"; }
+    clearTimeout(timer); timer = setTimeout(() => { copy.textContent = "Copy text"; }, 2000);
+  });
+
+  const TOG = [
+    ["layout", "Layout", [["grouped", "Grouped"], ["long", "Long"]]],
+    ["density", "Density", [["spacious", "Spacious"], ["dense", "Dense"]]],
+    ["text", "Text", [["normal", "Normal"], ["large", "Large"]]],
+    ["lang", "Language", [["zh", "中文"], ["en", "English"]]],
+    ["wording", "Wording", [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]]
+  ];
+  const toggles = h("div", { class: "toggles" });
+  TOG.forEach(([key, label, opts]) => {
+    const seg = h("div", { class: "seg", role: "group", "aria-label": label });
+    const btns = opts.map(([v, t]) => {
+      const b = h("button", { type: "button", "aria-pressed": String(prefs[key] === v) }, t);
+      b.addEventListener("click", () => {
+        if (prefs[key] === v) return;
+        prefs[key] = v; savePrefs(prefs);
+        btns.forEach((x, i) => x.setAttribute("aria-pressed", String(opts[i][0] === v)));
+        if (key === "wording") { if (data) fetchCard(); } else render();
+      });
+      return b;
+    });
+    seg.append(...btns);
+    toggles.append(h("div", { class: "tog" }, h("span", { class: "tl-lbl" }, label), seg));
+  });
+
+  show(h("h1", { class: "title" }, "Doctor card"),
+    h("div", { class: "row pick" }, h("label", { class: "sr", for: "card-problem" }, "Problem"), sel, make),
+    toggles, tools, out);
 }
 
 async function viewNotes() {

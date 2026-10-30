@@ -58,3 +58,33 @@ Single page, 4 tabs: **Timeline · Today · Doctor card · Notes**, plus the pil
 - **Doctor card**: placeholder card: "Doctor card comes in the next step." (step 3)
 - **Notes**: list newest first: date, first 80 chars, chips "emergency" red / "nothing medical" grey / "<n> entries"; tap → expands full text + its entries/questions/todos; "Delete" with confirm.
 - Copy: sentence case, plain verbs; the person is "Mom"; the user is "you". No medical advice anywhere in UI copy.
+
+---
+# Step 3 addendum — Doctor card (2026-10-30 04:10)
+
+## Card data (code builds it from the DB; the model only renders Chinese)
+`GET /api/card?problem=<label>|all&wording=A|B|C|D` → 
+```
+{ problem, generated_at, source_hash,
+  en: CARD, zh: CARD | null, zh_error: str|null }
+CARD = {
+  title: "Doctor card · teeth · 2026-11-10"            (zh: "妈妈的就诊卡 · 牙齿 · 2026年11月10日"),
+  history:   [{date_text, text}],                      # non-test, non-medicine entries for the problem, chronological, rough dates as text
+  tests:     [{date_text, test, where, result}],       # entries with a test; result "normal"/"not done"/... kept; where "" if unknown
+  medicines: [{name, detail}],                         # current: latest note's current_medicines rows + started-not-stopped events; detail = dose/since/rule if known
+  med_events:[{date_text, name, event, rule, reason}], # started/stopped/switched/skipped with stopping rule text if any
+  helps: [str], worsens: [str],
+  ask:       [{text, kind}]                            # kind: 'note' (ask_doctor rows, deduped), 'stop_rule' (one per started medicine, wording from STOP_RULE_WORDINGS[wording]; en = STOP_RULE_EN + " (<name>)"), 'stopcheck' (one per stopped medicine without a rule: "She stopped <name> on <date> because <reason>. Was it OK to stop? Should she restart?")
+}
+```
+- `problem=all` merges every problem; history/tests/med_events get the problem label prefixed in `text`.
+- `date_text`: ISO → "2026-11-03"; approx → "about 2026-10-22"; rough → the stored text; unknown → "date unknown".
+- **Chinese**: one Lightning call (same `call()` as extraction, thinking off, max_tokens 4000, response_format json_object) with `prompts.CARD_ZH_SYSTEM` as system and the `en` CARD JSON as the user message. Validate: same keys, same array lengths; on mismatch or ExtractError set `zh=null`, `zh_error`. The stop-rule question text is NOT sent to the model: code inserts `STOP_RULE_WORDINGS[wording]` + "（<name>）" into zh.ask after rendering (so the wording toggle needs no new model call). Cache in table `cards(problem, source_hash, wording_independent_zh_json, en_json, created_at)` keyed by `source_hash` = sha1 of the en CARD without the stop_rule items; a cache hit returns instantly.
+- `GET /api/card/text?problem=&wording=&lang=zh|en` → `text/plain; charset=utf-8` one-page rendering (title, then sections with headings 病史 / 已做的检查 / 现在在吃的药 / 想问医生的问题 — en: History / Tests already done / Current medicines / Ask the doctor), for copy/paste into WeChat.
+
+## Doctor card tab (frontend, replaces the placeholder)
+- Top: problem select (options from `/api/timeline` problems + "All"), "Make card" button (GET /api/card). While waiting: "Writing the card in Chinese…".
+- Toggle row (this IS the step-3 variants review; keep it visible for now): layout `grouped | long` (grouped = the sections above; long = one chronological list merging history + tests + med_events, with the ask section after), density `spacious | dense`, text `normal | large` (large = 19px body / 24px headings, for older eyes), language `中文 | English`, wording `A | B | C | D` (re-fetches the card; cache makes it instant). Persist toggles in localStorage `fr_card_prefs`.
+- Buttons: "Copy text" (fetches /api/card/text for the current lang+wording and copies to clipboard; shows "Copied"), "Print" (window.print with a print stylesheet: white, no chrome, card only).
+- Card rendering per design.md: the card is a single `.card` surface; section headings 13.5px/600 accent-ink; items in body size; dates in `--ink-2`; questions as a numbered list (order carries meaning here: the doctor reads them in order). Chinese renders with the system CJK fallback; never below body size.
+- If `zh` is null: show the English card with a notice "Chinese version failed; showing English. Try again."
